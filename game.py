@@ -4,7 +4,11 @@ winner = None
 rank = {"regular": 5, "no schnitz": 10, "no_tricker": 20}
 
 # attributes for player: score, name, dealer (boolean value)
-
+class Player:
+    def __init__(self):
+        self.score = 0
+        self.name = None
+        self.dealer = False
 
 def startup():
     pass
@@ -13,6 +17,9 @@ def display_scores():
     pass
 
 def start_round():
+    pass
+
+def write_score():
     pass
 
 def first_question():
