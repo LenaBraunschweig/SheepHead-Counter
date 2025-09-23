@@ -2,34 +2,44 @@ question_type = None
 partner = None
 winner = None
 rank = {"regular": 5, "no schnitz": 10, "no_tricker": 20}
+players = []
+dealer_index = 0
 
-# attributes for player: score, name, dealer (boolean value)
+# attributes for player: score, name, picker, partner
 class Player:
-    def __init__(self):
+    def __init__(self, name, number):
         self.score = 0
-        self.name = None
-        self.dealer = False
+        self.number = number
+        self.name = name
+        self.picker = False
+        self.partner = False
 
 def startup():
+    # create the people
+    for index in range(5):
+        player_number = index + 1
+        player_name = input(f"What is the name of player {player_number}")
+        current_player = Player(player_name, player_number)
+        players.append(current_player)
+
+def write_score():
     pass
 
 def display_scores():
     pass
 
-def start_round():
-    pass
-
-def write_score():
-    pass
-
-def first_question():
-    question_type = input("Is this a regular round or a leaster round: ")
+def run_round():
+    print(f"{players[dealer_index].name} is the dealer for this round")
+    question_type = input("Was this a regular round or a leaster round: ")
     if question_type == "regular":
         regular_round()
     elif question_type == "leaster":
         leaster_round()
     else:
         print("Not an answer")
+    dealer_index += 1
+    if dealer_index == 5:
+        dealer_index = 0
 
 def regular_round():
     def picker_wins(partner_yesno, rank):
@@ -60,11 +70,11 @@ def regular_round():
     if win_lose == "yes":
         picker_wins(partner, ranking)
     else:
-        picker_wins(partner, ranking)
+        picker_loses(partner, ranking)
 
     pass
 
 def leaster_round():
-    winner_choice = input("Who was the winner? (select None for a tie)")
+    winner_choice = input("Who was the winner? (type 'tie' for a tie)")
     if winner_choice != "tie":
         winner = winner_choice
