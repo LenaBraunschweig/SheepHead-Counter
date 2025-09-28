@@ -1,7 +1,7 @@
 question_type = None
 partner = None
 winner = None
-rank = {"regular": 5, "no schnitz": 10, "no_tricker": 20}
+rank = {"regular": 5, "no schnitz": 10, "no tricker": 20}
 players = []
 dealer_index = 0
 
@@ -16,11 +16,21 @@ class Player:
 
 def startup():
     # create the people
-    for index in range(5):
-        player_number = index + 1
+    for player_number in range(1, 6):
         player_name = input(f"What is the name of player {player_number}")
         current_player = Player(player_name, player_number)
         players.append(current_player)
+
+def find_person(person):
+    for player in players:
+        if ((player.number == int(person)) or (player.name == person)):
+            return player
+    return None
+        
+def reset_round():
+    for player in players:
+        player.picker = False
+        player.partner = False
 
 def write_score():
     pass
@@ -42,39 +52,59 @@ def run_round():
         dealer_index = 0
 
 def regular_round():
-    def picker_wins(partner_yesno, rank):
+    picker = input("Who was the winner?")
+    picker_person = find_person(picker)
+    picker_person.picker = True
+    def picker_wins(partner_yesno, ranking):
         if partner_yesno == None:
-            # make it so picker gets 4x whatever losers lose based on rank
-            pass
+            # picker gets 4x whatever losers lose based on rank
+            picker_person.score += (4 * rank[ranking])
+            for player in players:
+                if player.picker == False:
+                    player.score -= rank[ranking]
         else:
-            # make it so picker gets double whatever losers lose and partner gets the same
-            pass
+            # picker gets double whatever losers lose and partner gets the same
+            picker_person.score += (2 * rank[ranking])
+            partner_person.score += rank[ranking]
+            for player in players:
+                if ((player.picker == False) and (player.partner == False)):
+                    player.score -= rank[ranking]
 
-    def picker_loses(partner_yesno, rank):
+    def picker_loses(partner_yesno, ranking):
         if partner_yesno == None:
-            # make it so picker get negative 4x whatever the others won
-            pass
+            # picker get negative 4x whatever the others won
+            picker_person.score -= (4 * rank[ranking])
+            for player in players:
+                if player.picker == False:
+                    player.score += rank[ranking]
         else:
             # make it so picker loses double and partner loses regular
-            pass
-        pass
+            picker_person.score -= (2 * rank[ranking])
+            partner_person.score -= rank[ranking]
+            for player in players:
+                if ((player.picker == False) and (player.partner == False)):
+                    player.score += rank[ranking]
     
     partner_choice = input("Was there a partner, yes or no?")
     if partner_choice == "yes":
         partner = input("Which player was the partner?")
+        partner_person = find_person(partner)
+        partner_person.partner = True
     else:
-        partner = None
+        partner_person = None
     
     win_lose = input("Did the picker win?")
     ranking = input("Was it a regular round, no schnitz, or no tricker")
     if win_lose == "yes":
-        picker_wins(partner, ranking)
+        picker_wins(partner_person, ranking)
     else:
-        picker_loses(partner, ranking)
-
-    pass
+        picker_loses(partner_person, ranking)
 
 def leaster_round():
-    winner_choice = input("Who was the winner? (type 'tie' for a tie)")
-    if winner_choice != "tie":
-        winner = winner_choice
+    winner = input("Who was the winner? (type 'tie' for a tie)")
+    if winner != "tie":
+        winner_choice = find_person(winner)
+        winner_choice.score += 20
+        for player in players:
+            if player != winner_choice:
+                player.score -= 5
