@@ -33,10 +33,13 @@ def reset_round():
         player.partner = False
 
 def write_score():
-    pass
+    with open("test_file.txt", "a") as f:
+        for player in players:
+            f.write(player.score + "    ")
 
 def display_scores():
-    pass
+    with open("test_file.txt") as f:
+        print(f.read())
 
 def run_round():
     print(f"{players[dealer_index].name} is the dealer for this round")
