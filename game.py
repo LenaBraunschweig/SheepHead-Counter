@@ -1,3 +1,6 @@
+import csv
+import pandas as pd
+
 question_type = None
 partner = None
 winner = None
@@ -14,12 +17,20 @@ class Player:
         self.picker = False
         self.partner = False
 
-def startup():
+def startup(file_name):
     # create the people
+    player_names = []
     for player_number in range(1, 6):
         player_name = input(f"What is the name of player {player_number}")
+        player_names.append(player_name)
         current_player = Player(player_name, player_number)
         players.append(current_player)
+    
+    # create the spreadsheet
+    file = file_name + ".csv"
+    with open(file, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(player_names)
 
 def find_person(person):
     for player in players:
@@ -32,21 +43,26 @@ def reset_round():
         player.picker = False
         player.partner = False
 
-def write_score():
-    with open("test_file.txt", "a") as f:
-        for player in players:
-            f.write(player.score + "    ")
+def write_score(file_name):
+    current_scores = []
+    for player in players:
+        current_scores.append(player.score)
+    file = file_name + ".csv"
+    with open(file, "a") as f:
+        writer = csv.writer(f)
+        writer.writerow(current_scores)
 
-def display_scores():
-    with open("test_file.txt") as f:
-        print(f.read())
+def display_scores(file_name):
+    file = file_name + ".csv"
+    df = pd.read_csv(file)
+    print(df)
 
 def run_round():
     print(f"{players[dealer_index].name} is the dealer for this round")
     question_type = input("Was this a regular round or a leaster round: ")
-    if question_type == "regular":
+    if "regular" in question_type:
         regular_round()
-    elif question_type == "leaster":
+    elif "leaster" in question_type:
         leaster_round()
     else:
         print("Not an answer")
@@ -111,3 +127,6 @@ def leaster_round():
         for player in players:
             if player != winner_choice:
                 player.score -= 5
+
+def game():
+    pass
