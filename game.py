@@ -6,7 +6,6 @@ import pandas as pd
     -   add some debugging for items that are inputs that aren't valid
 '''
 
-
 question_type = None
 partner = None
 winner = None
