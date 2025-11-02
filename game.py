@@ -1,9 +1,10 @@
 import csv
 import pandas as pd
+import datetime
 
 ''' to do:
-    -   fix the printing so there are extra lines between unrelated output
     -   add some debugging for items that are inputs that aren't valid
+    -   double check the spacing between game sections
 '''
 
 question_type = None
@@ -12,6 +13,8 @@ winner = None
 rank = {"regular": 5, "no schnitz": 10, "no tricker": 20}
 players = []
 dealer_index = 0
+input_file = datetime.datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+game_continue = True
 
 # attributes for player: score, name, picker, partner
 class Player:
@@ -64,21 +67,24 @@ def display_scores(file_name):
 
 def run_round():
     global dealer_index
-    print(f"{players[dealer_index].name} is the dealer for this round")
-    question_type = input("Was this a regular round or a leaster round: ")
+    print(f"\n{players[dealer_index].name} is the dealer for this round")
+    question_type = input("\nWas this a regular round or a leaster round: ")
     if "regular" in question_type:
         regular_round()
     elif "leaster" in question_type:
         leaster_round()
     else:
-        print("Not an answer")
+        print("Not a valid answer")
     dealer_index += 1
     if dealer_index == 5:
         dealer_index = 0
 
 def regular_round():
-    picker = input("Who was the winner: ")
+    picker = input("\nWho was the winner: ")
     picker_person = find_person(picker)
+    if picker_person is None:
+        print("Not a valid answer")
+        return
     picker_person.picker = True
     def picker_wins(partner_yesno, ranking):
         if partner_yesno == None:
@@ -114,6 +120,9 @@ def regular_round():
     if partner_choice == "yes":
         partner = input("Which player was the partner: ")
         partner_person = find_person(partner)
+        if partner_person is None:
+            print("Not a valid answer")
+            return
         partner_person.partner = True
     else:
         partner_person = None
@@ -135,12 +144,15 @@ def leaster_round():
                 player.score -= 5
 
 def game():
-    input_file = input("File name- ") # want to change later to match the time and date
+    global game_continue
     startup(input_file)
-    while True: # need to change until someone reaches either 100 points or -100
+    while game_continue:
         run_round()
         write_score(input_file)
         display_scores(input_file)
         reset_round()
+        for player in players:
+            if player.score >= 100 or player.score <= -100:
+                game_continue = False
 
 game()
