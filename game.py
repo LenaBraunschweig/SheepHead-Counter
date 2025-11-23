@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 
 ''' to do:
-    -   add some debugging for items that are inputs that aren't valid
+    -   make sure error checking works
     -   double check the spacing between game sections
 '''
 
@@ -15,6 +15,7 @@ players = []
 dealer_index = 0
 input_file = datetime.datetime.now().strftime("%d-%m-%Y %H-%M-%S")
 game_continue = True
+next_round = True
 
 # attributes for player: score, name, picker, partner
 class Player:
@@ -66,6 +67,8 @@ def display_scores(file_name):
     print(df.to_string(index=False))
 
 def run_round():
+    global next_round
+    next_round = True
     global dealer_index
     print(f"\n{players[dealer_index].name} is the dealer for this round")
     question_type = input("\nWas this a regular round or a leaster round: ")
@@ -75,11 +78,14 @@ def run_round():
         leaster_round()
     else:
         print("Not a valid answer")
-    dealer_index += 1
-    if dealer_index == 5:
-        dealer_index = 0
+        next_round = False
+    if next_round:
+        dealer_index += 1
+        if dealer_index == 5:
+            dealer_index = 0
 
 def regular_round():
+    global next_round
     picker = input("\nWho was the winner: ")
     picker_person = find_person(picker)
     if picker_person is None:
@@ -87,6 +93,10 @@ def regular_round():
         return
     picker_person.picker = True
     def picker_wins(partner_yesno, ranking):
+        if ranking not in rank:
+            print("Not a valid game")
+            next_round = False
+            return
         if partner_yesno == None:
             # picker gets 4x whatever losers lose based on rank
             picker_person.score += (4 * rank[ranking])
@@ -124,8 +134,11 @@ def regular_round():
             print("Not a valid answer")
             return
         partner_person.partner = True
-    else:
+    elif partner_choice == "no":
         partner_person = None
+    else:
+        print("Not a valid answer")
+        return
     
     win_lose = input("Did the picker win: ")
     ranking = input("Was it a regular round, no schnitz, or no tricker: ")
@@ -136,7 +149,7 @@ def regular_round():
 
 def leaster_round():
     winner = input("Who was the winner? (type 'tie' for a tie): ")
-    if winner != "tie":
+    if "tie" not in winner:
         winner_choice = find_person(winner)
         winner_choice.score += 20
         for player in players:
