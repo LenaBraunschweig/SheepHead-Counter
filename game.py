@@ -54,6 +54,7 @@ def reset_round():
 
 def write_score(file_name):
     current_scores = []
+    print("\n")
     for player in players:
         current_scores.append(player.score)
     file = file_name + ".csv"
@@ -86,13 +87,15 @@ def run_round():
 
 def regular_round():
     global next_round
-    picker = input("\nWho was the winner: ")
+    picker = input("\nWho was the picker: ")
     picker_person = find_person(picker)
     if picker_person is None:
         print("Not a valid answer")
+        next_round = False
         return
     picker_person.picker = True
     def picker_wins(partner_yesno, ranking):
+        global next_round
         if ranking not in rank:
             print("Not a valid game")
             next_round = False
@@ -132,12 +135,14 @@ def regular_round():
         partner_person = find_person(partner)
         if partner_person is None:
             print("Not a valid answer")
+            next_round = False
             return
         partner_person.partner = True
     elif partner_choice == "no":
         partner_person = None
     else:
         print("Not a valid answer")
+        next_round = False
         return
     
     win_lose = input("Did the picker win: ")
@@ -148,9 +153,14 @@ def regular_round():
         picker_loses(partner_person, ranking)
 
 def leaster_round():
+    global next_round
     winner = input("Who was the winner? (type 'tie' for a tie): ")
     if "tie" not in winner:
         winner_choice = find_person(winner)
+        if winner is None:
+            print("Not a valid answer")
+            next_round = False
+            return
         winner_choice.score += 20
         for player in players:
             if player != winner_choice:
@@ -158,10 +168,12 @@ def leaster_round():
 
 def game():
     global game_continue
+    global next_round
     startup(input_file)
     while game_continue:
         run_round()
-        write_score(input_file)
+        if next_round:
+            write_score(input_file)
         display_scores(input_file)
         reset_round()
         for player in players:
