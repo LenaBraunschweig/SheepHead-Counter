@@ -143,7 +143,7 @@ def regular_round():
         return
     
     win_lose = input("Did the picker win (yes or no): ")
-    ranking = input("What kind of round was it (regular, no schnitz, or no tricker): ")
+    ranking = input("How did the round end (regular, no schnitz, or no tricker): ")
     if win_lose == "yes":
         picker_wins(partner_person, ranking)
     else:
