@@ -179,5 +179,6 @@ def game():
         for player in players:
             if player.score >= 100 or player.score <= -100:
                 game_continue = False
+                print("\n")
 
 game()
