@@ -2,11 +2,6 @@ import csv
 import pandas as pd
 import datetime
 
-''' to do:
-    -   make sure error checking works
-    -   double check the spacing between game sections
-'''
-
 question_type = None
 partner = None
 winner = None
@@ -65,14 +60,16 @@ def write_score(file_name):
 def display_scores(file_name):
     file = file_name + ".csv"
     df = pd.read_csv(file)
-    print(df.to_string(index=False))
+    row_count = len(df)
+    if row_count > 0:
+        print(df.to_string(index=False))
 
 def run_round():
     global next_round
     next_round = True
     global dealer_index
     print(f"\n{players[dealer_index].name} is the dealer for this round")
-    question_type = input("\nWas this a regular round or a leaster round: ")
+    question_type = input("\nWas kind of round was this (regular or leaster): ")
     if "regular" in question_type:
         regular_round()
     elif "leaster" in question_type:
@@ -129,7 +126,7 @@ def regular_round():
                 if ((player.picker == False) and (player.partner == False)):
                     player.score += rank[ranking]
     
-    partner_choice = input("Was there a partner, yes or no: ")
+    partner_choice = input("Was there a partner (yes or no): ")
     if partner_choice == "yes":
         partner = input("Which player was the partner: ")
         partner_person = find_person(partner)
@@ -145,8 +142,8 @@ def regular_round():
         next_round = False
         return
     
-    win_lose = input("Did the picker win: ")
-    ranking = input("Was it a regular round, no schnitz, or no tricker: ")
+    win_lose = input("Did the picker win (yes or no): ")
+    ranking = input("What kind of round was it (regular, no schnitz, or no tricker): ")
     if win_lose == "yes":
         picker_wins(partner_person, ranking)
     else:
